@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ post.title }}</title>
+</head>
+<body>
+    <h1>{{ post.title }}</h1>
+    <p><strong>Автор:</strong> {{ post.author }}</p>
+    <p>{{ post.content }}</p>
+
+    <form action="{% url 'post_edit' post.id %}" method="get">
+        {% csrf_token %}
+        <button type="submit">Редактировать пост</button>
+    </form>
+
+    <form action="{% url 'post_delete' post.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Удалить пост </button>
+    </form>
+
+    <br>
+
+    <div id="comments-section">
+        <h2>Комментарии:</h2>
+            <ul id="comments-list">
+                {% for comment in post.comments.all %}
+                    <p>{{comment.author}} прокомментировал:</p>
+                    <p>{{comment.content }}</p>
+                {% endfor %}
+        </ul>
+    </div>
+
+    <form action="{% url 'post_detail' post.id %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }} <!-- Используем вашу форму -->
+        <button type="submit">Отправить</button>
+    </form>
+
+    <br>
+
+    <a href="{% url 'post_list' %}">Назад к списку постов</a>
+</body>
+</html>
