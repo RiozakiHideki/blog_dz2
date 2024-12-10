@@ -1,17 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Создать пост</title>
-</head>
+{% extends 'app/base.html' %}
+{% block title %}Создать пост{% endblock %}
+
 <body>
-    <h1>Создать новый пост</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}  <!-- Отображаем форму -->
-        <button type="submit">Сохранить</button>
-    </form>
-    <a href="{% url 'post_list' %}">Назад к списку постов</a>
+
+{% block content %}
+
+    {% if  user.is_authenticated %}
+        <h1>Создать новый пост</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}  <!-- Отображаем форму -->
+            <button type="submit">Сохранить</button>
+        </form>
+        <a href="{% url 'post_list' %}">Назад к списку постов</a>
+        
+        {% else %}
+            <p>
+                Совершите
+                <a href="{% url 'login' %}">Вход</a>
+                или
+                <a href="{% url 'registration' %}">Зарегистрируйтесь</a>,
+                чтобы создать пост.
+            </p>
+    {% endif %}
+{% endblock %}
+
 </body>
-</html>

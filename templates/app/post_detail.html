@@ -10,6 +10,7 @@
     <p><strong>Автор:</strong> {{ post.author }}</p>
     <p>{{ post.content }}</p>
 
+    {% if user == post.author %}
     <form action="{% url 'post_edit' post.id %}" method="get">
         {% csrf_token %}
         <button type="submit">Редактировать пост</button>
@@ -19,7 +20,8 @@
         {% csrf_token %}
         <button type="submit">Удалить пост </button>
     </form>
-
+    {% endif %}
+    
     <br>
 
     <div id="comments-section">
@@ -32,11 +34,22 @@
         </ul>
     </div>
 
-    <form action="{% url 'post_detail' post.id %}" method="post">
-        {% csrf_token %}
-        {{ form.as_p }} <!-- Используем вашу форму -->
-        <button type="submit">Отправить</button>
-    </form>
+    {% if user.is_authenticated  %}
+        <form action="{% url 'post_detail' post.id %}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }} <!-- Используем вашу форму -->
+            <button type="submit">Отправить</button>
+        </form>
+
+        {% else %}
+            <p>
+                Совершите
+                <a href="{% url 'login' %}">Вход</a>
+                или
+                <a href="{% url 'registration' %}">Зарегистрируйтесь</a>,
+                чтобы прокомментировать пост.
+            </p>
+    {% endif %}
 
     <br>
 

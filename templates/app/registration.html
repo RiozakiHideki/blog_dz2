@@ -1,0 +1,20 @@
+{% extends 'app/base.html' %}
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+    {% if not user.is_authenticated %}
+        <body class="register-page">
+            <h1 class="register-h1">Регистрация</h1>
+            <form class="register form" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}  <!-- Отображаем форму -->
+                <button class="register-button" type="submit">Регистрация</button>
+            </form>
+        </body>
+        
+        {% else %}
+            <p>Вы уже вошли в систему</p>
+            <a href="{% url 'post_list' %}">На главную</a>
+        
+    {% endif %}
+{% endblock %}

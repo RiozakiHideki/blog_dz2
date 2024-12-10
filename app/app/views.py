@@ -1,7 +1,11 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import PostForm, CommentForm
 from .models import Post
+from django.contrib import messages
+from django.contrib.auth import authenticate, login as auth_login
 
 
 def index(request):
@@ -10,10 +14,15 @@ def index(request):
 
 def create_post(request):
     if request.method == 'POST':
-        form = PostForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('post_list')
+        if request.user.is_authenticated:
+            form = PostForm(request.POST)
+            if form.is_valid():
+                post = form.save(commit=False)
+                post.author = request.user
+                form.save()
+                return redirect('post_list')
+        else:
+            form = PostForm()
     else:
         form = PostForm()
 
@@ -28,22 +37,27 @@ def post_detail(request, post_id):
     form = CommentForm()  # Пустая форма для отображения при GET-запросе
 
     if request.method == 'POST':  # Проверяем, если это POST-запрос
-        form = CommentForm(request.POST)  # Создаем форму с данными из POST
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.post = post  # Привязываем комментарий к текущему посту
-            comment.save()
-            return redirect('post_detail', post_id=post.id)  # Перезагружаем страницу
-
+        if request.user.is_authenticated:
+            form = CommentForm(request.POST)  # Создаем форму с данными из POST
+            if form.is_valid():
+                comment = form.save(commit=False)
+                comment.post = post  # Привязываем комментарий к текущему посту
+                comment.author = request.user
+                comment.save()
+                return redirect('post_detail', post_id=post.id)  # Перезагружаем страницу
+        else:
+            form.add_error(None, "Чтобы оставить комментарий, вам нужно войти в систему.")
     # Передаем пост и форму в шаблон
     return render(request, 'app/post_detail.html', {'post': post, 'form': form})
 
 
+@login_required(login_url='login')
 def post_delete(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     post.delete()
     return redirect('post_list')
 
+@login_required(login_url='login')
 def post_edit(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
@@ -59,6 +73,33 @@ def post_edit(request, post_id):
 
 
     return render(request, 'app/post_edit.html', {'form': form, 'post': post})
+
+
+def registration(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'app/registration.html', {'form': form})
+
+
+def login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            auth_login(request, user)
+            return redirect('post_list')
+        else:
+            messages.error(request, 'Неверное имя пользователя или пароль')
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'app/login.html', {'form': form})
 
 
 

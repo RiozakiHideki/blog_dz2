@@ -1,19 +1,22 @@
 from django import forms
-from pkg_resources import require
-
-from .models import Post, Comment
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from .models import Post, Comment, User
 
 
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'content', 'author']
+        fields = ['title', 'content']
 
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ['content', 'author']
+        fields = ['content',]
         widgets = {
             'content': forms.Textarea(attrs={'placeholder': 'Введите Ваш комментарий'}),
-            'author': forms.TextInput(attrs={'placeholder': 'Введите Ваше имя'}),
         }
+
+class RegisterForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
