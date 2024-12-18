@@ -120,6 +120,20 @@ header {
     margin: 0 15px 0 0; /* Отступы для текста */
 }
 
+.currency {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.currency-ul {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    list-style: none;
+
+}
+
 .logout-button {
     background-color: #dc3545; /* Красный цвет для кнопки выхода */
     color: white;

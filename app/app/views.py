@@ -1,3 +1,5 @@
+from lib2to3.fixes.fix_input import context
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.http import HttpResponse
@@ -6,10 +8,7 @@ from .forms import PostForm, CommentForm
 from .models import Post
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login
-
-
-def index(request):
-    return HttpResponse("Hello world")
+import requests
 
 
 def create_post(request):
@@ -30,7 +29,14 @@ def create_post(request):
 
 def post_list(request):
     posts = Post.objects.all()  # Получаем все посты
-    return render(request, 'app/post_list.html', {'posts': posts})
+
+    rub_cur = requests.get('https://api.nbrb.by/exrates/rates/456').json()['Cur_OfficialRate']
+    usd_cur = requests.get('https://api.nbrb.by/exrates/rates/431').json()['Cur_OfficialRate']
+    eur_cur = requests.get('https://api.nbrb.by/exrates/rates/451').json()['Cur_OfficialRate']
+    pln_cur = requests.get('https://api.nbrb.by/exrates/rates/452').json()['Cur_OfficialRate']
+
+    return render(request, 'app/post_list.html',{'posts': posts,
+                   'rub_cur': rub_cur, 'usd_cur': usd_cur, 'eur_cur': eur_cur, 'pln_cur': pln_cur})
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
@@ -100,6 +106,5 @@ def login(request):
         form = AuthenticationForm()
 
     return render(request, 'app/login.html', {'form': form})
-
 
 

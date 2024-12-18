@@ -31,6 +31,15 @@
         {% else %}
     {% endif %}
     
+    <div class="currency">
+        <ul class="currency-ul">
+            <li>100 RUB = {{ rub_cur }} BYN</li>
+            <li>1 USD = {{ usd_cur }} BYN</li>
+            <li>1 EUR = {{ eur_cur }} BYN</li>
+            <li>10 PLN = {{ pln_cur }} BYN</li>
+        </ul>
+    </div>
+    
     <main>
         {% block content %}
         {% endblock %}
