@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import PostForm, CommentForm
+from .forms import PostForm, CommentForm, RegisterForm
 from .models import Post
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login
@@ -83,12 +83,12 @@ def post_edit(request, post_id):
 
 def registration(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('login')
     else:
-        form = UserCreationForm()
+        form = RegisterForm
 
     return render(request, 'app/registration.html', {'form': form})
 
